@@ -1,0 +1,21 @@
+#!/bin/sh
+# Yerel LLM kod incelemesi: git add ile eklenen degisikliklerde
+# kritik bulgu varsa commit'i durdurur.
+
+PY=".venv/Scripts/python.exe"          # Windows
+[ -f "$PY" ] || PY=".venv/bin/python"   # Linux / macOS
+
+echo "Yerel kod incelemesi calisiyor..."
+"$PY" -m app.diff_review --staged
+SONUC=$?
+
+if [ "$SONUC" -eq 3 ]; then
+    echo ""
+    echo "COMMIT DURDURULDU: kritik bulgu var. Duzeltip tekrar dene."
+    echo "Yine de commit etmek icin: git commit --no-verify"
+    exit 1
+elif [ "$SONUC" -ne 0 ]; then
+    echo ""
+    echo "Uyari: inceleme calismadi (Ollama acik mi?). Commit engellenmedi."
+fi
+exit 0

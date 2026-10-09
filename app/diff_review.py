@@ -6,6 +6,10 @@ from app.git_araclari import degisen_dosyalar, degisen_satirlar, dosya_icerigi, 
 from app.reviewer import DIL_UZANTILARI
 from app.yapisal import incele, markdown_rapor
 
+# Çıkış kodları: 0 = temiz, 3 = kritik bulgu var, 2 = inceleme yapılamadı.
+# Kritik için 1 yerine 3 kullanıyoruz: Python çökerse de 1 döner, karışmasın.
+KRITIK_VAR = 3
+
 
 def main():
     p = argparse.ArgumentParser(description="Git değişikliklerini yerel LLM ile inceler")
@@ -38,8 +42,12 @@ def main():
 
     print("=" * 60)
     print(f"TOPLAM KRİTİK BULGU: {toplam_kritik}")
-    return 1 if toplam_kritik else 0
+    return KRITIK_VAR if toplam_kritik else 0
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    try:
+        sys.exit(main())
+    except Exception as e:  # Ollama kapalı, git hatası vb.
+        print(f"İnceleme yapılamadı: {e}")
+        sys.exit(2)
