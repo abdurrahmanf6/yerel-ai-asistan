@@ -1,5 +1,5 @@
 import os
-
+import ast
 def ortalama_hesapla(sayilar):
     toplam = 0
     for s in sayilar:
@@ -26,3 +26,6 @@ def dosya_oku(yol):
     f = open(yol)
     veri = f.read()
     return veri
+
+def hesapla(ifade):
+    return ast.literal_eval(ifade)
