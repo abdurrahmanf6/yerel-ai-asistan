@@ -1,10 +1,10 @@
 import argparse
+import sys
 from pathlib import Path
 
 from app.git_araclari import degisen_dosyalar, degisen_satirlar, dosya_icerigi, repo_koku
-from app.llm import sor
-from app.prompts import KOD_INCELEME_SISTEM
-from app.reviewer import DIL_UZANTILARI, bulgulari_metne_cevir, inceleme_istegi_hazirla
+from app.reviewer import DIL_UZANTILARI
+from app.yapisal import incele, markdown_rapor
 
 
 def main():
@@ -20,21 +20,26 @@ def main():
 
     if not dosyalar:
         print("İncelenecek değişiklik yok.")
-        return
+        return 0
 
+    toplam_kritik = 0
     for dosya in dosyalar:
         satirlar = degisen_satirlar(kok, dosya, a.staged)
         if not satirlar:
             continue
         kod = dosya_icerigi(kok, dosya, a.staged)
-        istek, statik, _ = inceleme_istegi_hazirla(kod, Path(dosya).name, satirlar)
 
         print("=" * 60)
-        print(f"{dosya}: {len(satirlar)} değişen satır, {len(statik)} statik bulgu")
-        print(bulgulari_metne_cevir(statik))
-        print("-" * 60)
-        sor(istek, sistem=KOD_INCELEME_SISTEM, sicaklik=0.1)
+        print(f"{dosya}: {len(satirlar)} değişen satır (model çalışıyor...)")
+        print("=" * 60)
+        sonuc = incele(kod, Path(dosya).name, satirlar)
+        print(markdown_rapor(sonuc))
+        toplam_kritik += sonuc["kritik_sayisi"]
+
+    print("=" * 60)
+    print(f"TOPLAM KRİTİK BULGU: {toplam_kritik}")
+    return 1 if toplam_kritik else 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

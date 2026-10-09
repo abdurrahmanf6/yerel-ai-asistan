@@ -41,7 +41,7 @@ def ruff_calistir(kod, dosya_adi):
     """Kodu stdin üzerinden Ruff'a verir (diske yazmaya gerek yok)."""
     sonuc = subprocess.run(
         [sys.executable, "-m", "ruff", "check", "--isolated",
-         "--output-format=json", "--select", "E,F,B,S,SIM",
+                  "--output-format=json", "--select", "E,F,B,S,SIM", "--ignore", "E501",
          "--stdin-filename", dosya_adi, "-"],
         input=kod, capture_output=True, text=True, encoding="utf-8",
     )
