@@ -69,7 +69,7 @@ Temel çıkarımlar:
 ## Kurulum
 
 ```powershell
-git clone https://github.com/KULLANICI_ADIN/yerel-ai-asistan.git
+git clone https://github.com/abdurrahmanf6/yerel-ai-asistan.git
 cd yerel-ai-asistan
 
 python -m venv .venv
